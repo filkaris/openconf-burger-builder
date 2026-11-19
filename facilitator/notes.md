@@ -145,9 +145,21 @@ ciabatta (+50), focaccia (sold out).
 | 12 | sandwich = 200 + bread price | API |
 | 13 | patty on taco/sandwich refused | API `availableIn` (guessable) |
 | 14 | ham on taco, black beans on sandwich refused | API `availableIn` only |
-| 15 | exactly one tortilla / bread | issue |
-| 16 | taco max 3 toppings, tortilla and sauces don't count | issue |
-| 17 | vegetarian taco 10% off: 485 -> 436.5 -> 437 | issue + API `vegetarian` + ADR 0002 |
+| 15 | exactly one tortilla / bread | owner's brief (slide) |
+| 16 | taco max 3 toppings, tortilla and sauces don't count | owner's brief (slide) |
+| 17 | vegetarian taco 10% off: 485 -> 436.5 -> 437 | owner's brief (slide) + API `vegetarian` + ADR 0002 |
+
+### Owner's brief (on the slide, not in the issue)
+
+The issue only says what the code and the API need. The rules below are on
+the challenge 6 slide as the "Owner's brief"; attendees answer the agent's
+grill questions from it. An agent that builds straight from the issue should
+miss checks 15-17.
+
+- Exactly one tortilla per taco, one bread per sandwich
+- A taco holds at most 3 toppings. Tortilla and sauces don't count
+- Vegetarian tacos are 10% off
+- Sauces work the same as on burgers
 
 ### GitHub issue #3
 
@@ -157,14 +169,14 @@ Title: **Add tacos and sandwiches**
 We're adding tacos and sandwiches next to burgers. Same builder: the customer picks what they're making first.
 
 - Use the kitchen's ingredients. Not everything goes in everything; the kitchen system says what can go where.
-- Every taco has exactly one tortilla. Every sandwich has exactly one bread.
-- A taco holds at most 3 toppings. The tortilla and sauces don't count.
-- Vegetarian tacos are 10% off.
-- Sauces work the same as on burgers.
 - Prices come from the kitchen, including the base price of each product.
 
 For the API: `POST /api/price` takes a `product` (`burger`, `taco` or `sandwich`). No product means burger, so the current app keeps working.
 ```
+
+No-grill run (Claude Sonnet, thinned issue #3 only, untouched starter, 2026-11-19):
+checks 11-14 pass (v3, base prices, availableIn), 15-17 fail (tortilla/bread,
+max 3 toppings, vegetarian 10%). Score 8/17 (it also found the v2 sauces).
 
 Reference run (Claude Sonnet, both tickets in one prompt, 2026-11-19, before the v3 split): 18/18 (17/17 without the dropped truffle mayo check).
 It also hid all sold-out ingredients and added a product picker in the UI.
