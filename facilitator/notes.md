@@ -13,11 +13,11 @@ The untouched starter scores 3/11. A correct sauces solution scores 9/11.
 
 ## Setup
 
-The kitchen API mock is its own repo (`filkaris/stackd-kitchen`) so an agent
+The kitchen API mock is its own repo (`filkaris/openconf-kitchen`) so an agent
 working in the starter can't read v2 or the sauces in its source:
 
 ```sh
-npx --allow-git=all github:filkaris/stackd-kitchen     # :4100, docs at /docs
+npx --allow-git=all github:filkaris/openconf-kitchen     # :4100, docs at /docs
 ```
 
 - v1 (`/ingredients`, `/categories`): 12 ingredients, **no sauces**,
@@ -85,7 +85,7 @@ Heard you're adding sauces to the burger builder. A few things from the kitchen 
 
 Thanks,
 Nikos
-Kitchen lead, Stack'd
+Kitchen lead, OpenConf Burgers
 ```
 
 ## The traps

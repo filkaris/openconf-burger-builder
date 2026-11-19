@@ -49,7 +49,7 @@ const v2Ingredients = ingredients.map((i) => ({
   price: { amount: i.priceCents, currency: 'EUR', unit: 'cents' },
   portionsLeft: i.stock,
 }));
-const shop = { name: "Stack'd", tagline: 'Build it your way', currency: 'EUR', basePriceCents: BASE };
+const shop = { name: "OpenConf Burgers", tagline: 'Build it your way', currency: 'EUR', basePriceCents: BASE };
 
 function paginate(items, pageParam) {
   const page = Math.max(1, Number.parseInt(pageParam ?? '1', 10) || 1);
