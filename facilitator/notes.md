@@ -5,11 +5,11 @@ exploring the repo don't find it. `npm run score` on `main` reads
 `acceptance.test.js` from here with `git show`.
 
 ```sh
-npm run score             # "Score: 3/11", for participants
+npm run score             # "Score: 3/18", for participants
 npm run score -- --reveal # per-test ✔/✘, for the debrief
 ```
 
-The untouched starter scores 3/11. A correct sauces solution scores 9/11.
+The untouched starter scores 3/18. A reference solution of challenges 4-6 scores 18/18.
 
 ## Setup
 
@@ -148,3 +148,41 @@ down on check 11. *Your tests encode your assumptions.*
 | Tests first | 6 tests written, failed, then green. Stated "beef then chickpea discounts the chickpea". | 4/11 |
 | Ask the owner | 13 open cases; flagged mixed patties, 3+ patties, promo end date. No code changed. | 4/11 |
 | Owner's answer pasted | Cheapest patty discounted; asked which patty with 3+ (the comment says one, not which). | 5/11 |
+
+## Tacos and sandwiches (challenge 6, stretch)
+
+Checks 12-18. Kitchen v2 adds `/v2/products` (burger 250, taco 150,
+sandwich 200 base) and `availableIn` / `vegetarian` on every ingredient.
+New: pulled pork, chicken tinga (taco only), smoked ham (sandwich only), black
+beans (taco only), pico de gallo (taco only), corn/flour tortilla, sourdough,
+ciabatta (+50), focaccia (sold out).
+
+| # | Check | Where the rule lives |
+|---|---|---|
+| 12 | taco = 150 + tortilla + toppings | issue (product) + API (base price) |
+| 13 | sandwich = 200 + bread price | API |
+| 14 | patty on taco/sandwich refused | API `availableIn` (guessable) |
+| 15 | ham on taco, black beans on sandwich refused | API `availableIn` only |
+| 16 | exactly one tortilla / bread | issue |
+| 17 | taco max 3 toppings, tortilla and sauces don't count | issue |
+| 18 | vegetarian taco 10% off: 485 -> 436.5 -> 437 | issue + API `vegetarian` + ADR 0002 |
+
+### GitHub issue #3
+
+Title: **Add tacos and sandwiches**
+
+```markdown
+We're adding tacos and sandwiches next to burgers. Same builder: the customer picks what they're making first.
+
+- Use the kitchen's ingredients. Not everything goes in everything; the kitchen system says what can go where.
+- Every taco has exactly one tortilla. Every sandwich has exactly one bread.
+- A taco holds at most 3 toppings. The tortilla and sauces don't count.
+- Vegetarian tacos are 10% off.
+- Sauces work the same as on burgers.
+- Prices come from the kitchen, including the base price of each product.
+
+For the API: `POST /api/price` takes a `product` (`burger`, `taco` or `sandwich`). No product means burger, so the current app keeps working.
+```
+
+Reference run (Claude Sonnet, both tickets in one prompt, 2026-11-19): 18/18.
+It also hid all sold-out ingredients and added a product picker in the UI.
