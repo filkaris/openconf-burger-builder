@@ -151,9 +151,9 @@ down on check 11. *Your tests encode your assumptions.*
 
 ## Tacos and sandwiches (challenge 6, stretch)
 
-Checks 12-18. Kitchen v2 adds `/v2/products` (burger 250, taco 150,
-sandwich 200 base) and `availableIn` / `vegetarian` on every ingredient.
-New: pulled pork, chicken tinga (taco only), smoked ham (sandwich only), black
+Checks 12-18. Kitchen **v3** (v2 is unchanged) adds `/v3/products` (burger 250, taco 150,
+sandwich 200 base) and `availableIn` / `vegetarian` on every v3 ingredient.
+New (v3 only): pulled pork, chicken tinga (taco only), smoked ham (sandwich only), black
 beans (taco only), pico de gallo (taco only), corn/flour tortilla, sourdough,
 ciabatta (+50), focaccia (sold out).
 
@@ -184,5 +184,5 @@ We're adding tacos and sandwiches next to burgers. Same builder: the customer pi
 For the API: `POST /api/price` takes a `product` (`burger`, `taco` or `sandwich`). No product means burger, so the current app keeps working.
 ```
 
-Reference run (Claude Sonnet, both tickets in one prompt, 2026-11-19): 18/18.
+Reference run (Claude Sonnet, both tickets in one prompt, 2026-11-19, before the v3 split): 18/18.
 It also hid all sold-out ingredients and added a product picker in the UI.

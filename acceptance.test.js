@@ -15,7 +15,7 @@ const ROOT = process.env.BURGER_ROOT;
 const PAGE_SIZE = 5;
 const BASE = 250;
 
-// Same data as the kitchen repo's data.json.
+// Same data as the kitchen repo's data.json. `since` = first API version.
 const ingredients = [
   {"id": "beef-patty", "name": "Beef patty", "category": "patty", "priceCents": 350, "stock": 25, "inStock": true, "availableIn": ["burger"], "vegetarian": false},
   {"id": "veggie-patty", "name": "Chickpea patty", "category": "patty", "priceCents": 300, "stock": 12, "inStock": true, "availableIn": ["burger"], "vegetarian": true},
@@ -29,46 +29,41 @@ const ingredients = [
   {"id": "fried-egg", "name": "Fried egg", "category": "extra", "priceCents": 130, "stock": 9, "inStock": true, "availableIn": ["burger", "sandwich"], "vegetarian": true},
   {"id": "jalapenos", "name": "Jalapeños", "category": "veggie", "priceCents": 50, "stock": 0, "inStock": false, "availableIn": ["burger", "taco", "sandwich"], "vegetarian": true},
   {"id": "halloumi", "name": "Grilled halloumi", "category": "cheese", "priceCents": 150, "stock": 8, "inStock": true, "availableIn": ["burger", "taco", "sandwich"], "vegetarian": true},
-  {"id": "ketchup", "name": "Ketchup", "category": "sauce", "priceCents": 30, "stock": 60, "v2Only": true, "availableIn": ["burger", "taco", "sandwich"], "vegetarian": true},
-  {"id": "mustard", "name": "Mustard", "category": "sauce", "priceCents": 30, "stock": 40, "v2Only": true, "availableIn": ["burger", "taco", "sandwich"], "vegetarian": true},
-  {"id": "house-sauce", "name": "House sauce", "category": "sauce", "priceCents": 50, "stock": 22, "v2Only": true, "availableIn": ["burger", "taco", "sandwich"], "vegetarian": true},
-  {"id": "bbq", "name": "Smoky BBQ", "category": "sauce", "priceCents": 60, "stock": 30, "v2Only": true, "availableIn": ["burger", "taco", "sandwich"], "vegetarian": true},
-  {"id": "garlic-aioli", "name": "Garlic aioli", "category": "sauce", "priceCents": 70, "stock": 15, "v2Only": true, "availableIn": ["burger", "taco", "sandwich"], "vegetarian": true},
-  {"id": "sriracha-mayo", "name": "Sriracha mayo", "category": "sauce", "priceCents": 80, "stock": 0, "v2Only": true, "availableIn": ["burger", "taco", "sandwich"], "vegetarian": true},
-  {"id": "truffle-mayo", "name": "Truffle mayo", "category": "sauce", "priceCents": 150, "stock": 6, "v2Only": true, "availableIn": ["burger", "taco", "sandwich"], "vegetarian": true},
-  {"id": "pulled-pork", "name": "Pulled pork", "category": "filling", "priceCents": 320, "stock": 20, "v2Only": true, "availableIn": ["taco", "sandwich"], "vegetarian": false},
-  {"id": "chicken-tinga", "name": "Chicken tinga", "category": "filling", "priceCents": 290, "stock": 14, "v2Only": true, "availableIn": ["taco"], "vegetarian": false},
-  {"id": "ham", "name": "Smoked ham", "category": "filling", "priceCents": 180, "stock": 25, "v2Only": true, "availableIn": ["sandwich"], "vegetarian": false},
-  {"id": "black-beans", "name": "Black beans", "category": "filling", "priceCents": 120, "stock": 30, "v2Only": true, "availableIn": ["taco"], "vegetarian": true},
-  {"id": "pico-de-gallo", "name": "Pico de gallo", "category": "veggie", "priceCents": 45, "stock": 24, "v2Only": true, "availableIn": ["taco"], "vegetarian": true},
-  {"id": "corn-tortilla", "name": "Corn tortilla", "category": "bread", "priceCents": 0, "stock": 80, "v2Only": true, "availableIn": ["taco"], "vegetarian": true},
-  {"id": "flour-tortilla", "name": "Flour tortilla", "category": "bread", "priceCents": 20, "stock": 60, "v2Only": true, "availableIn": ["taco"], "vegetarian": true},
-  {"id": "sourdough", "name": "Sourdough", "category": "bread", "priceCents": 0, "stock": 30, "v2Only": true, "availableIn": ["sandwich"], "vegetarian": true},
-  {"id": "ciabatta", "name": "Ciabatta", "category": "bread", "priceCents": 50, "stock": 20, "v2Only": true, "availableIn": ["sandwich"], "vegetarian": true},
-  {"id": "focaccia", "name": "Focaccia", "category": "bread", "priceCents": 80, "stock": 0, "v2Only": true, "availableIn": ["sandwich"], "vegetarian": true},
+  {"id": "ketchup", "name": "Ketchup", "category": "sauce", "priceCents": 30, "stock": 60, "since": 2, "availableIn": ["burger", "taco", "sandwich"], "vegetarian": true},
+  {"id": "mustard", "name": "Mustard", "category": "sauce", "priceCents": 30, "stock": 40, "since": 2, "availableIn": ["burger", "taco", "sandwich"], "vegetarian": true},
+  {"id": "house-sauce", "name": "House sauce", "category": "sauce", "priceCents": 50, "stock": 22, "since": 2, "availableIn": ["burger", "taco", "sandwich"], "vegetarian": true},
+  {"id": "bbq", "name": "Smoky BBQ", "category": "sauce", "priceCents": 60, "stock": 30, "since": 2, "availableIn": ["burger", "taco", "sandwich"], "vegetarian": true},
+  {"id": "garlic-aioli", "name": "Garlic aioli", "category": "sauce", "priceCents": 70, "stock": 15, "since": 2, "availableIn": ["burger", "taco", "sandwich"], "vegetarian": true},
+  {"id": "sriracha-mayo", "name": "Sriracha mayo", "category": "sauce", "priceCents": 80, "stock": 0, "since": 2, "availableIn": ["burger", "taco", "sandwich"], "vegetarian": true},
+  {"id": "truffle-mayo", "name": "Truffle mayo", "category": "sauce", "priceCents": 150, "stock": 6, "since": 2, "availableIn": ["burger", "taco", "sandwich"], "vegetarian": true},
+  {"id": "pulled-pork", "name": "Pulled pork", "category": "filling", "priceCents": 320, "stock": 20, "since": 3, "availableIn": ["taco", "sandwich"], "vegetarian": false},
+  {"id": "chicken-tinga", "name": "Chicken tinga", "category": "filling", "priceCents": 290, "stock": 14, "since": 3, "availableIn": ["taco"], "vegetarian": false},
+  {"id": "ham", "name": "Smoked ham", "category": "filling", "priceCents": 180, "stock": 25, "since": 3, "availableIn": ["sandwich"], "vegetarian": false},
+  {"id": "black-beans", "name": "Black beans", "category": "filling", "priceCents": 120, "stock": 30, "since": 3, "availableIn": ["taco"], "vegetarian": true},
+  {"id": "pico-de-gallo", "name": "Pico de gallo", "category": "veggie", "priceCents": 45, "stock": 24, "since": 3, "availableIn": ["taco"], "vegetarian": true},
+  {"id": "corn-tortilla", "name": "Corn tortilla", "category": "bread", "priceCents": 0, "stock": 80, "since": 3, "availableIn": ["taco"], "vegetarian": true},
+  {"id": "flour-tortilla", "name": "Flour tortilla", "category": "bread", "priceCents": 20, "stock": 60, "since": 3, "availableIn": ["taco"], "vegetarian": true},
+  {"id": "sourdough", "name": "Sourdough", "category": "bread", "priceCents": 0, "stock": 30, "since": 3, "availableIn": ["sandwich"], "vegetarian": true},
+  {"id": "ciabatta", "name": "Ciabatta", "category": "bread", "priceCents": 50, "stock": 20, "since": 3, "availableIn": ["sandwich"], "vegetarian": true},
+  {"id": "focaccia", "name": "Focaccia", "category": "bread", "priceCents": 80, "stock": 0, "since": 3, "availableIn": ["sandwich"], "vegetarian": true},
 ];
-const categories = [{"id": "patty", "label": "Patties"}, {"id": "filling", "label": "Fillings", "v2Only": true}, {"id": "cheese", "label": "Cheese"}, {"id": "veggie", "label": "Veggies"}, {"id": "extra", "label": "Extras"}, {"id": "bread", "label": "Bread"}, {"id": "sauce", "label": "Sauces", "v2Only": true}];
+const categories = [{"id": "patty", "label": "Patties"}, {"id": "filling", "label": "Fillings", "since": 3}, {"id": "cheese", "label": "Cheese"}, {"id": "veggie", "label": "Veggies"}, {"id": "extra", "label": "Extras"}, {"id": "bread", "label": "Bread"}, {"id": "sauce", "label": "Sauces", "since": 2}];
 const products = [{"id": "burger", "name": "Burger", "basePriceCents": 250}, {"id": "taco", "name": "Taco", "basePriceCents": 150}, {"id": "sandwich", "name": "Sandwich", "basePriceCents": 200}];
 const SAUCES = ['ketchup', 'mustard', 'house-sauce', 'bbq', 'garlic-aioli', 'sriracha-mayo', 'truffle-mayo'];
-const v1Categories = categories.filter((c) => !c.v2Only).map(({ id, label }) => ({ id, label }));
+const inVersion = (v) => (x) => (x.since ?? 1) <= v;
+const v1Categories = categories.filter(inVersion(1)).map(({ id, label }) => ({ id, label }));
 const v1Ingredients = ingredients
-  .filter((i) => !i.v2Only)
+  .filter(inVersion(1))
   .map(({ id, name, category, priceCents, stock, inStock }) => ({ id, name, category, priceCents, stock, inStock }));
-const v2Categories = categories.map((c) => ({ type: c.id, label: c.label }));
-const v2Ingredients = ingredients.map((i) => ({
-  sku: i.id,
-  displayName: i.name,
-  type: i.category,
-  price: { amount: i.priceCents, currency: 'EUR', unit: 'cents' },
-  portionsLeft: i.stock,
-  availableIn: i.availableIn,
-  vegetarian: i.vegetarian,
-}));
-const v2Products = products.map((p) => ({
-  sku: p.id,
-  displayName: p.name,
-  basePrice: { amount: p.basePriceCents, currency: 'EUR', unit: 'cents' },
-}));
+const money = (amount) => ({ amount, currency: 'EUR', unit: 'cents' });
+const v2Item = (i) => ({ sku: i.id, displayName: i.name, type: i.category, price: money(i.priceCents), portionsLeft: i.stock });
+const LISTS = {
+  '/v2/categories': categories.filter(inVersion(2)).map((c) => ({ type: c.id, label: c.label })),
+  '/v2/ingredients': ingredients.filter(inVersion(2)).map(v2Item),
+  '/v3/categories': categories.filter(inVersion(3)).map((c) => ({ type: c.id, label: c.label })),
+  '/v3/ingredients': ingredients.filter(inVersion(3)).map((i) => ({ ...v2Item(i), availableIn: i.availableIn, vegetarian: i.vegetarian })),
+  '/v3/products': products.map((p) => ({ sku: p.id, displayName: p.name, basePrice: money(p.basePriceCents) })),
+};
 const shop = { name: 'OpenConf Burgers', tagline: 'Build it your way', currency: 'EUR', basePriceCents: BASE };
 
 function paginate(items, pageParam) {
@@ -105,13 +100,12 @@ function createKitchen() {
       if (item) body = { data: item };
       else [status, body] = [404, { error: 'ingredient_not_found' }];
     } else if (path === '/allergens') [status, body] = [503, { error: 'allergen_service_unavailable' }];
-    else if (path === '/v2/categories' || path === '/v2/ingredients' || path === '/v2/products') {
-      const lists = { '/v2/categories': v2Categories, '/v2/ingredients': v2Ingredients, '/v2/products': v2Products };
-      body = paginateV2(lists[path], url.searchParams.get('cursor'));
+    else if (LISTS[path]) {
+      body = paginateV2(LISTS[path], url.searchParams.get('cursor'));
       if (!body) [status, body] = [400, { error: { code: 'invalid_cursor', message: 'Cursor is not valid' } }];
-    } else if (path.startsWith('/v2/ingredients/')) {
+    } else if (/^\/v[23]\/ingredients\//.test(path)) {
       const sku = decodeURIComponent(path.slice('/v2/ingredients/'.length));
-      body = v2Ingredients.find((i) => i.sku === sku);
+      body = LISTS[path.slice(0, 3) + '/ingredients'].find((i) => i.sku === sku);
       if (!body) [status, body] = [404, { error: { code: 'sku_not_found', message: sku } }];
     } else [status, body] = [404, { error: 'not_found' }];
     res.writeHead(status, { 'content-type': 'application/json' });
@@ -247,7 +241,7 @@ test('with two different patties, the cheaper one is the half-price one', async 
   assert.equal(await price(['veggie-patty', 'beef-patty']), BASE + 350 + 150);
 });
 
-// --- tacos and sandwiches (issue #3 + kitchen v2 products) ---
+// --- tacos and sandwiches (issue #3 + kitchen v3) ---
 // POST /api/price { product, ingredientIds }; no product means burger.
 
 async function quote(product, ingredientIds) {
