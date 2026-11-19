@@ -106,3 +106,45 @@ Kitchen lead, OpenConf Burgers
    fixed total bar covers the bottom of the page.
 7. **Check 11.** "Second patty half price" says nothing about mixed patties.
    Debrief line: *your tests encode your assumptions.*
+
+## Second patty: issue, owner answer, dry run
+
+### GitHub issue #2
+
+Title: **Second patty half price**
+
+```markdown
+Launch promo for next week: the second patty on a burger is half price.
+
+The total in the builder should show the discounted price.
+```
+
+### Owner's comment (post live, after the first score run)
+
+```sh
+gh issue comment 2 -R filkaris/openconf-burger-builder --body "..."
+```
+
+```markdown
+Good questions. With two different patties, the cheaper one is half price,
+in any order. Only one patty per burger gets the discount, so a third patty
+is full price. No end date yet, I'll open a ticket when the promo ends.
+```
+
+### Flow
+
+1. Tests first (slide prompt). Agent writes failing tests, implements, green.
+   It discounts the second patty in stack order. Check 11 fails.
+2. Ask the owner (slide prompt). Agent lists the open cases with blank prices.
+3. Post the comment above. Attendees fill in the prices, fix, re-score.
+
+Debrief: everyone's tests were green after step 1, and the score still went
+down on check 11. *Your tests encode your assumptions.*
+
+### Dry run (2026-11-19, Claude Sonnet, untouched starter)
+
+| Step | Result | Score |
+|---|---|---|
+| Tests first | 6 tests written, failed, then green. Stated "beef then chickpea discounts the chickpea". | 4/11 |
+| Ask the owner | 13 open cases; flagged mixed patties, 3+ patties, promo end date. No code changed. | 4/11 |
+| Owner's answer pasted | Cheapest patty discounted; asked which patty with 3+ (the comment says one, not which). | 5/11 |
