@@ -28,10 +28,27 @@ const ingredients = [
   { id: 'fried-egg', name: 'Fried egg', category: 'extra', priceCents: 130, stock: 9, inStock: true },
   { id: 'jalapenos', name: 'Jalapeños', category: 'veggie', priceCents: 50, stock: 0, inStock: false },
   { id: 'halloumi', name: 'Grilled halloumi', category: 'cheese', priceCents: 150, stock: 8, inStock: true },
-  { id: 'ketchup', name: 'Ketchup', category: 'sauce', priceCents: 30, stock: 60, inStock: true },
-  { id: 'house-sauce', name: 'House sauce', category: 'sauce', priceCents: 50, stock: 22, inStock: true },
+  // v2 only
+  { id: 'ketchup', name: 'Ketchup', category: 'sauce', priceCents: 30, stock: 60, v2: true },
+  { id: 'mustard', name: 'Mustard', category: 'sauce', priceCents: 30, stock: 40, v2: true },
+  { id: 'house-sauce', name: 'House sauce', category: 'sauce', priceCents: 50, stock: 22, v2: true },
+  { id: 'bbq', name: 'Smoky BBQ', category: 'sauce', priceCents: 60, stock: 30, v2: true },
+  { id: 'garlic-aioli', name: 'Garlic aioli', category: 'sauce', priceCents: 70, stock: 15, v2: true },
+  { id: 'sriracha-mayo', name: 'Sriracha mayo', category: 'sauce', priceCents: 80, stock: 0, v2: true },
+  { id: 'truffle-mayo', name: 'Truffle mayo', category: 'sauce', priceCents: 150, stock: 6, v2: true },
 ];
-const categories = ['patty', 'cheese', 'veggie', 'extra', 'sauce', 'bread'].map((id) => ({ id, label: id }));
+const SAUCES = ['ketchup', 'mustard', 'house-sauce', 'bbq', 'garlic-aioli', 'sriracha-mayo', 'truffle-mayo'];
+const categoryIds = ['patty', 'cheese', 'veggie', 'extra', 'bread', 'sauce'];
+const v1Categories = categoryIds.filter((id) => id !== 'sauce').map((id) => ({ id, label: id }));
+const v1Ingredients = ingredients.filter((i) => !i.v2).map(({ v2, ...i }) => i);
+const v2Categories = categoryIds.map((id) => ({ type: id, label: id }));
+const v2Ingredients = ingredients.map((i) => ({
+  sku: i.id,
+  displayName: i.name,
+  type: i.category,
+  price: { amount: i.priceCents, currency: 'EUR', unit: 'cents' },
+  portionsLeft: i.stock,
+}));
 const shop = { name: "Stack'd", tagline: 'Build it your way', currency: 'EUR', basePriceCents: BASE };
 
 function paginate(items, pageParam) {
@@ -44,20 +61,38 @@ function paginate(items, pageParam) {
   };
 }
 
+function paginateV2(items, cursor) {
+  const offset = cursor ? Number(/^o:(\d+)$/.exec(Buffer.from(cursor, 'base64url').toString())?.[1] ?? NaN) : 0;
+  if (Number.isNaN(offset)) return null;
+  const end = offset + PAGE_SIZE;
+  return {
+    items: items.slice(offset, end),
+    cursor: { next: end < items.length ? Buffer.from(`o:${end}`).toString('base64url') : null },
+  };
+}
+
 function createKitchen() {
   return http.createServer((req, res) => {
     const url = new URL(req.url, 'http://kitchen.local');
+    const path = url.pathname.replace(/\/+$/, '') || '/';
     let status = 200;
     let body;
-    if (url.pathname === '/shop') body = { data: shop };
-    else if (url.pathname === '/categories') body = paginate(categories, url.searchParams.get('page'));
-    else if (url.pathname === '/ingredients') body = paginate(ingredients, url.searchParams.get('page'));
-    else if (url.pathname.startsWith('/ingredients/')) {
-      const item = ingredients.find((i) => i.id === decodeURIComponent(url.pathname.slice('/ingredients/'.length)));
+    if (path === '/shop') body = { data: shop };
+    else if (path === '/categories') body = paginate(v1Categories, url.searchParams.get('page'));
+    else if (path === '/ingredients') body = paginate(v1Ingredients, url.searchParams.get('page'));
+    else if (path.startsWith('/ingredients/')) {
+      const item = v1Ingredients.find((i) => i.id === decodeURIComponent(path.slice('/ingredients/'.length)));
       if (item) body = { data: item };
       else [status, body] = [404, { error: 'ingredient_not_found' }];
-    } else if (url.pathname === '/allergens') [status, body] = [503, { error: 'allergen_service_unavailable' }];
-    else [status, body] = [404, { error: 'not_found' }];
+    } else if (path === '/allergens') [status, body] = [503, { error: 'allergen_service_unavailable' }];
+    else if (path === '/v2/categories' || path === '/v2/ingredients') {
+      body = paginateV2(path === '/v2/categories' ? v2Categories : v2Ingredients, url.searchParams.get('cursor'));
+      if (!body) [status, body] = [400, { error: { code: 'invalid_cursor', message: 'Cursor is not valid' } }];
+    } else if (path.startsWith('/v2/ingredients/')) {
+      const sku = decodeURIComponent(path.slice('/v2/ingredients/'.length));
+      body = v2Ingredients.find((i) => i.sku === sku);
+      if (!body) [status, body] = [404, { error: { code: 'sku_not_found', message: sku } }];
+    } else [status, body] = [404, { error: 'not_found' }];
     res.writeHead(status, { 'content-type': 'application/json' });
     res.end(JSON.stringify(body));
   });
@@ -118,15 +153,6 @@ async function price(ingredientIds) {
   return (await res.json()).totalCents;
 }
 
-async function ingredient(id) {
-  const res = await fetch(`${baseUrl}/api/ingredients/${id}`);
-  let body = null;
-  try {
-    body = await res.json();
-  } catch {}
-  return { status: res.status, item: body?.data ?? body?.ingredient ?? body };
-}
-
 // --- baseline ---
 
 test('the menu loads', async () => {
@@ -142,36 +168,52 @@ test('a single patty is full price, and double cheese is not discounted', async 
   assert.equal(await price(['beef-patty', 'cheddar', 'cheddar']), BASE + 350 + 100 + 100);
 });
 
-// --- one ingredient by id ---
+// --- add sauces (issue #1 + the kitchen's email) ---
 
-test('GET /api/ingredients/:id returns one ingredient, 404 for unknown ids', async () => {
-  const found = await ingredient('cheddar');
-  assert.equal(found.status, 200);
-  assert.equal(found.item?.name, 'Cheddar');
-  assert.equal((await ingredient('unicorn')).status, 404);
-});
+async function priceStatus(ingredientIds) {
+  const res = await fetch(`${baseUrl}/api/price`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ ingredientIds }),
+  });
+  return res.status;
+}
 
-test('GET /api/ingredients/:id finds ingredients beyond the first kitchen page', async () => {
-  const found = await ingredient('halloumi');
-  assert.equal(found.status, 200);
-  assert.equal(found.item?.name, 'Grilled halloumi');
-});
-
-// --- in stock only ---
-
-test('the menu includes ingredients from every kitchen page', async () => {
+async function menuSauces() {
   const ids = await menuIds();
-  for (const id of ['tomato', 'fried-egg', 'house-sauce']) assert.ok(ids.includes(id), `missing ${id}`);
+  const sauces = ids.filter((id) => SAUCES.includes(id));
+  assert.ok(sauces.length > 0, 'no sauces on the menu');
+  return sauces;
+}
+
+test('the menu has the kitchen\'s sauces (v2)', async () => {
+  const sauces = await menuSauces();
+  for (const id of ['ketchup', 'mustard', 'house-sauce', 'bbq', 'garlic-aioli']) {
+    assert.ok(sauces.includes(id), `missing ${id}`);
+  }
 });
 
-test('sold-out ingredients are hidden, even when the stale inStock flag says true', async () => {
-  const ids = await menuIds();
-  assert.ok(!ids.includes('bacon'), 'bacon has stock 0');
-  assert.ok(!ids.includes('jalapenos'), 'jalapenos has stock 0');
+test('sold-out sauces are hidden', async () => {
+  assert.ok(!(await menuSauces()).includes('sriracha-mayo'), 'sriracha mayo has 0 portions');
 });
 
-test('ingredients with stock are shown, even when the stale inStock flag says false', async () => {
-  assert.ok((await menuIds()).includes('avocado'), 'avocado has stock 12');
+test('truffle mayo is off the menu (kitchen email)', async () => {
+  assert.ok(!(await menuSauces()).includes('truffle-mayo'), 'truffle mayo is out until December');
+});
+
+test('the first sauce is free', async () => {
+  assert.equal(await price(['beef-patty', 'bbq']), BASE + 350);
+});
+
+test('the second sauce costs its kitchen price', async () => {
+  assert.equal(await price(['beef-patty', 'bbq', 'bbq']), BASE + 350 + 60);
+  assert.equal(await price(['beef-patty', 'garlic-aioli', 'garlic-aioli']), BASE + 350 + 70);
+});
+
+test('a third sauce is refused', async () => {
+  assert.equal(await priceStatus(['beef-patty', 'ketchup', 'mustard']), 200, 'two sauces are allowed');
+  const status = await priceStatus(['beef-patty', 'ketchup', 'mustard', 'house-sauce']);
+  assert.ok(status >= 400 && status < 500, `three sauces returned ${status}`);
 });
 
 // --- second patty half price ---
