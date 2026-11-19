@@ -95,7 +95,7 @@ Launch promo for next week: the second patty on a burger is half price.
 The total in the builder should show the discounted price.
 ```
 
-### Owner's comment (post live, after the first score run)
+### Owner's comment (post live, once attendees ask on the issue)
 
 ```sh
 gh issue comment 2 -R filkaris/openconf-burger-builder --body "..."
@@ -109,13 +109,17 @@ is full price. No end date yet, I'll open a ticket when the promo ends.
 
 ### Flow
 
-1. Tests first (slide prompt). Agent writes failing tests, implements, green.
-   It discounts the second patty in stack order. Check 10 fails.
-2. Ask the owner (slide prompt). Agent lists the open cases with blank prices.
-3. Post the comment above. Attendees fill in the prices, fix, re-score.
+1. Tests only, no code. The agent lists its tests as burger → price.
+2. The attendee reviews the list: what is missing? The mixed-patty case
+   (beef + chickpea, which one is discounted?) is the one to catch.
+3. Open cases go on issue #2 as comments. Answer with the owner's comment
+   above once the first questions arrive (or after ~5 min if none do).
+4. Then the code until the tests pass, then `npm run score` (max 10/17;
+   9/17 without the owner's answer).
 
-Debrief: everyone's tests were green after step 1, and the score still went
-down on check 10. *Your tests encode your assumptions.*
+Debrief: who caught the mixed-patty case while reviewing the list? Those who
+didn't had green tests and still lost check 10. *Your tests encode your
+assumptions*, so the test list is the cheapest place to review.
 
 ### Dry run (2026-11-19, Claude Sonnet, untouched starter)
 
