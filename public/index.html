@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OpenConf Burgers · Build your burger</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <span class="logo">🍔</span>
+      <div>
+        <h1 id="shop-name">OpenConf Burgers</h1>
+        <p class="subtitle" id="shop-tagline">Build it your way</p>
+      </div>
+    </header>
+
+    <main class="builder">
+      <section class="picker" aria-label="Ingredients">
+        <div id="menu" aria-live="polite"><p class="hint">Loading the menu…</p></div>
+      </section>
+
+      <section class="preview" aria-label="Your burger">
+        <h2>Your burger</h2>
+        <div class="stack" id="stack"></div>
+        <p class="hint">Tap a layer to remove it.</p>
+      </section>
+    </main>
+
+    <footer class="total-bar">
+      <span>Total</span>
+      <strong id="total">–</strong>
+      <button id="clear" type="button">Start over</button>
+    </footer>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

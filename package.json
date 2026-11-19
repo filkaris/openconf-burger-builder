@@ -1,0 +1,15 @@
+{
+  "name": "openconf-burger-builder",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Build-your-own-burger configurator for OpenConf Burgers",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "start": "node scripts/dev.js",
+    "test": "node --test",
+    "score": "node scripts/score.js"
+  }
+}
