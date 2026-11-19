@@ -5,11 +5,11 @@ exploring the repo don't find it. `npm run score` on `main` reads
 `acceptance.test.js` from here with `git show`.
 
 ```sh
-npm run score             # "Score: 3/18", for participants
+npm run score             # "Score: 3/17", for participants
 npm run score -- --reveal # per-test ✔/✘, for the debrief
 ```
 
-The untouched starter scores 3/18. A reference solution of challenges 4-6 scores 18/18.
+The untouched starter scores 3/17. A reference solution of challenges 4-6 scores 17/17.
 
 ## Setup
 
@@ -27,30 +27,29 @@ npx --allow-git=all github:filkaris/openconf-kitchen     # :4100, docs at /docs
   `price.amount`, `portionsLeft`. 5 per page, sauces on pages 3-4.
 - `docs/kitchen-api.md` in the starter describes v1 only.
 
-## The 11 checks
+## Burger checks (1-10)
 
 | # | Check | Feature | What it takes |
 |---|---|---|---|
 | 1 | menu loads | baseline | nothing |
 | 2 | plain burger price | baseline | nothing |
 | 3 | single patty full price, double cheese not discounted | baseline | not over-applying a discount |
-| 4 | menu has ketchup, mustard, house sauce, BBQ, garlic aioli | sauces | v2 and all its pages (email: sauces are only on v2) |
+| 4 | menu has ketchup, mustard, house sauce, BBQ, garlic aioli | sauces | v2 and all its pages (v1 `notice` points to v2) |
 | 5 | sriracha mayo hidden | sauces | `portionsLeft > 0` (issue: hide sold-out) |
-| 6 | truffle mayo hidden | sauces | the email only: v2 says 6 portions left |
-| 7 | burger + BBQ = no sauce charge | sauces | issue: first sauce free |
-| 8 | BBQ x2 = +60, garlic aioli x2 = +70 | sauces | real v2 prices; invented prices fail |
-| 9 | 2 sauces OK, 3 sauces 4xx | sauces | issue: max 2 |
-| 10 | two beef patties: second half price | patty | the rule as stated |
-| 11 | chickpea + beef: the *cheaper* patty is discounted | patty | nobody told them; only asking the owner would |
+| 6 | burger + BBQ = no sauce charge | sauces | issue: first sauce free |
+| 7 | BBQ x2 = +60, garlic aioli x2 = +70 | sauces | real v2 prices; invented prices fail |
+| 8 | 2 sauces OK, 3 sauces 4xx | sauces | issue: max 2 |
+| 9 | two beef patties: second half price | patty | the rule as stated |
+| 10 | chickpea + beef: the *cheaper* patty is discounted | patty | nobody told them; only asking the owner would |
 
-Checks 5, 6 and 9 also require at least one sauce on the menu (or two sauces
+Checks 5 and 8 also require at least one sauce on the menu (or two sauces
 priced), so the untouched starter can't pass them by accident.
 
-## Sauces: the two sources
+## Sauces
 
-Debrief: who gave the agent only the ticket? (Rules right; sauces invented or
-missing, 4 fails.) Who gave it the email too? (Went to v2, 6 passes.) Who has
-truffle mayo on the menu? (They read v2 but not the email.)
+Debrief: who gave the agent only the ticket and let it trust the repo docs?
+(Rules right; sauces invented or missing.) Who had it look at the live API?
+(Found v2 through the v1 `notice`, real sauces and prices.)
 
 ### GitHub issue #1
 
@@ -66,28 +65,6 @@ Customers keep asking for sauces. Let's add them to the builder.
 Sauces get their own section in the builder, and the total updates as usual.
 ```
 
-### Email from the kitchen lead
-
-Subject: **Sauces for the burger builder**
-
-```text
-Hi,
-
-Heard you're adding sauces to the burger builder. A few things from the kitchen side:
-
-- Sauces are only in the new kitchen API (v2). The old one (v1) doesn't have
-  them, and the platform switches v1 off at the end of the month anyway.
-  The v2 docs are at /docs on the kitchen API.
-- Truffle mayo is out until December. The system still shows a few portions
-  from the last batch, but those are going in the bin. Please don't sell it.
-- Prices are whatever the kitchen system says. I change them there, so don't
-  copy them into the code.
-
-Thanks,
-Nikos
-Kitchen lead, OpenConf Burgers
-```
-
 ## The traps
 
 1. **`AGENTS.md` lies.** Express, TypeScript, Jest, `npm run dev`, port 8080,
@@ -100,11 +77,10 @@ Kitchen lead, OpenConf Burgers
    `apiClient.getAllPages()` doesn't do.
 3. **v1 vs v2.** Repo docs are v1 only. v1 has deprecation headers and a
    `notice` in every body; an agent that looks at a live response finds v2.
-4. **Truffle mayo.** Only the email knows.
-5. **`GET /allergens` always returns 503.**
-6. **Mobile CSS.** Fixed-width grid and preview overflow at phone width; the
+4. **`GET /allergens` always returns 503.**
+5. **Mobile CSS.** Fixed-width grid and preview overflow at phone width; the
    fixed total bar covers the bottom of the page.
-7. **Check 11.** "Second patty half price" says nothing about mixed patties.
+6. **Check 10.** "Second patty half price" says nothing about mixed patties.
    Debrief line: *your tests encode your assumptions.*
 
 ## Second patty: issue, owner answer, dry run
@@ -134,14 +110,16 @@ is full price. No end date yet, I'll open a ticket when the promo ends.
 ### Flow
 
 1. Tests first (slide prompt). Agent writes failing tests, implements, green.
-   It discounts the second patty in stack order. Check 11 fails.
+   It discounts the second patty in stack order. Check 10 fails.
 2. Ask the owner (slide prompt). Agent lists the open cases with blank prices.
 3. Post the comment above. Attendees fill in the prices, fix, re-score.
 
 Debrief: everyone's tests were green after step 1, and the score still went
-down on check 11. *Your tests encode your assumptions.*
+down on check 10. *Your tests encode your assumptions.*
 
 ### Dry run (2026-11-19, Claude Sonnet, untouched starter)
+
+Scores are out of 11, the count at the time (it included the dropped truffle mayo check).
 
 | Step | Result | Score |
 |---|---|---|
@@ -151,7 +129,7 @@ down on check 11. *Your tests encode your assumptions.*
 
 ## Tacos and sandwiches (challenge 6, stretch)
 
-Checks 12-18. Kitchen **v3** (v2 is unchanged) adds `/v3/products` (burger 250, taco 150,
+Checks 11-17. Kitchen **v3** (v2 is unchanged) adds `/v3/products` (burger 250, taco 150,
 sandwich 200 base) and `availableIn` / `vegetarian` on every v3 ingredient.
 New (v3 only): pulled pork, chicken tinga (taco only), smoked ham (sandwich only), black
 beans (taco only), pico de gallo (taco only), corn/flour tortilla, sourdough,
@@ -159,13 +137,13 @@ ciabatta (+50), focaccia (sold out).
 
 | # | Check | Where the rule lives |
 |---|---|---|
-| 12 | taco = 150 + tortilla + toppings | issue (product) + API (base price) |
-| 13 | sandwich = 200 + bread price | API |
-| 14 | patty on taco/sandwich refused | API `availableIn` (guessable) |
-| 15 | ham on taco, black beans on sandwich refused | API `availableIn` only |
-| 16 | exactly one tortilla / bread | issue |
-| 17 | taco max 3 toppings, tortilla and sauces don't count | issue |
-| 18 | vegetarian taco 10% off: 485 -> 436.5 -> 437 | issue + API `vegetarian` + ADR 0002 |
+| 11 | taco = 150 + tortilla + toppings | issue (product) + API (base price) |
+| 12 | sandwich = 200 + bread price | API |
+| 13 | patty on taco/sandwich refused | API `availableIn` (guessable) |
+| 14 | ham on taco, black beans on sandwich refused | API `availableIn` only |
+| 15 | exactly one tortilla / bread | issue |
+| 16 | taco max 3 toppings, tortilla and sauces don't count | issue |
+| 17 | vegetarian taco 10% off: 485 -> 436.5 -> 437 | issue + API `vegetarian` + ADR 0002 |
 
 ### GitHub issue #3
 
@@ -184,5 +162,5 @@ We're adding tacos and sandwiches next to burgers. Same builder: the customer pi
 For the API: `POST /api/price` takes a `product` (`burger`, `taco` or `sandwich`). No product means burger, so the current app keeps working.
 ```
 
-Reference run (Claude Sonnet, both tickets in one prompt, 2026-11-19, before the v3 split): 18/18.
+Reference run (Claude Sonnet, both tickets in one prompt, 2026-11-19, before the v3 split): 18/18 (17/17 without the dropped truffle mayo check).
 It also hid all sold-out ingredients and added a product picker in the UI.

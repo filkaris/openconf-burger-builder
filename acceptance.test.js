@@ -183,7 +183,7 @@ test('a single patty is full price, and double cheese is not discounted', async 
   assert.equal(await price(['beef-patty', 'cheddar', 'cheddar']), BASE + 350 + 100 + 100);
 });
 
-// --- add sauces (issue #1 + the kitchen's email) ---
+// --- add sauces (issue #1 + kitchen API v2) ---
 
 async function priceStatus(ingredientIds) {
   const res = await fetch(`${baseUrl}/api/price`, {
@@ -210,10 +210,6 @@ test('the menu has the kitchen\'s sauces (v2)', async () => {
 
 test('sold-out sauces are hidden', async () => {
   assert.ok(!(await menuSauces()).includes('sriracha-mayo'), 'sriracha mayo has 0 portions');
-});
-
-test('truffle mayo is off the menu (kitchen email)', async () => {
-  assert.ok(!(await menuSauces()).includes('truffle-mayo'), 'truffle mayo is out until December');
 });
 
 test('the first sauce is free', async () => {
