@@ -17,7 +17,7 @@ The kitchen API mock is its own repo (`filkaris/stackd-kitchen`) so an agent
 working in the starter can't read v2 or the sauces in its source:
 
 ```sh
-npx github:filkaris/stackd-kitchen     # :4100, docs at /docs
+npx --allow-git=all github:filkaris/stackd-kitchen     # :4100, docs at /docs
 ```
 
 - v1 (`/ingredients`, `/categories`): 12 ingredients, **no sauces**,
